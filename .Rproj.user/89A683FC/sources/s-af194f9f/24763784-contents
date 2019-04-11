@@ -1,0 +1,783 @@
+---
+title: "Body Fat Project"
+output: 
+  bookdown::html_document2: 
+    highlight: espresso
+    theme: spacelab
+author: "Your Name Here"
+date: 'Last compiled: `r format(Sys.time(), "%B %d, %Y")`'
+bibliography: 
+  - packages.bib
+  - bmi.bib
+css: MyLab.css
+---
+
+```{r label = "setup", include = FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.align = "center", comment = NA, message = FALSE, warning = FALSE)
+```
+
+```{r, results = "hide", echo = FALSE, message = FALSE}
+PackagesUsed <- c("tidyverse", "caret", "rpart", "rmarkdown", "bookdown", 
+                  "plotly", "ggplot2", "knitr", "plotly", "glmnet", "dplyr",
+                  "data.table", "MASS", "caretEnsemble", "ranger",
+                  "randomForest", "leaps", "corrplot","GGally", "mfp", 
+                  "partykit", "gbm", "RANN", "e1071", "rpart.plot", "corrplot")
+knitr::write_bib(PackagesUsed, file = "./packages.bib")
+```
+
+<div id="license">
+This material is released under an [Attribution-NonCommercial-ShareAlike 3.0 United States](https://creativecommons.org/licenses/by-nc-sa/3.0/us/) license.  Original author: [Alan T. Arnholt](https://alanarnholt.github.io/)
+</div>
+
+<div id="instructions">
+Follow all directions. Type complete sentences to answer all questions inside the `answer` tags provided in the R Markdown document.  Round all numeric answers you report inside the answer tags to four decimal places.  Use inline `R` code to report numeric answers inside the `answer` tags (i.e. do not hard code your numeric answers).
+
+The article by @johnson_fitting_1996 defines bodyfat determined with the siri and brozek methods as well as fat free weight using equations  \@ref(eq:siri), \@ref(eq:brozek), and \@ref(eq:fatfree), respectively.
+
+\begin{equation}
+\text{bodyfatSiri} = \frac{457}{\text{density}} - 414.2
+(\#eq:siri)
+\end{equation}
+
+\begin{equation}
+\text{bodyfatBrozek} = \frac{495}{\text{density}} - 450
+(\#eq:brozek)
+\end{equation}
+
+\begin{equation}
+\text{FatFreeWeight} = \left(1 -\frac{\text{brozek}}{100}\times \text{weight_lbs}\right)
+(\#eq:fatfree)
+\end{equation}
+Body Mass Index (`BMI`) is defined as 
+
+$$\text{BMI} = \frac{\text{kg}}{\text{m}^2}$$
+Please use the following conversion factors with this project: 0.453592 kilos per pound and 2.54 centimeters per inch.
+</div>
+
+
+1. Use the original data from <http://jse.amstat.org/datasets/fat.dat.txt> and evaluate the quality of the data.  Specifically, start by using the `fread()` function from the `data.table` package written by @R-data.table to read the data from <http://jse.amstat.org/datasets/fat.dat.txt> into an object named `bodyfat`.  Pass the following vector of names to the `col.names` argument of `fread()`: 
+`c("case", "brozek", "siri", "density", "age", "weight_lbs", "height_in", "bmi", "fat_free_weight",` 
+`"neck_cm", "chest_cm", "abdomen_cm", "hip_cm", "thigh_cm", "knee_cm", "ankle_cm", "biceps_cm",` `"forearm_cm", "wrist_cm")`
+
+    ```{r, label = "readin"}
+    # Type your code and comments inside the code chunk
+    # Obtaining the original data
+    
+    ```
+  
+      + Create `plotly` interactive scatterplots of `brozek` versus `density` with `case` mapped to `color`, `weight_lbs` versus `height_in` with `case` mapped to `color`, and `ankle_cm` versus `weight_lbs` with `case` mapped to `color` to help identify potential outliers. How many values do you think are potentially data entry errors?  Explain your reasoning and show the code you used to identify the errors.  
+    
+     
+      
+        ```{r, label = "itp1", fig.cap = "Plot of `brozek` versus `density`"}
+        # Type your code and comments inside the code chunk
+        # Creating interactive scatterplot of brozek versus density
+        
+        ```
+      
+        ```{r, label = "itp2", fig.cap = "Plot of `weight_lbs` versus `height_in`"}
+        # Type your code and comments inside the code chunk
+        # Creating interactive scatterplot of weight_lbs versus height_in
+        
+        ```
+      
+        ```{r}
+        # Type your code and comments inside the code chunk
+        # Isolating points of interest
+        
+        ```
+      
+        ```{r}
+        # Type your code and comments inside the code chunk
+        # Replacing identified typos of density and height_in
+        # Updating computed bodyfat values and bmi measurements
+        
+        ```
+      
+        ```{r, label = "itp3", fig.cap = "Interactive scatterplot of `ankle_cm` versus `weight_lbs`"}
+        # Type your code and comments inside the code chunk
+        # Creating interactive scatterplot of ankle_cm versus weight_lbs
+        
+        ```
+      
+        ```{r}
+        # Type your code and comments inside the code chunk
+        # Replacing identified typos in ankle_cm
+        
+        ```
+      
+        
+        ```{r}
+        # Type your code and comments inside the code chunk
+        # Identifying bodyfat typos for brozek and siri
+        
+        ```
+      
+    
+        <div id="answer">
+        Type your complete sentence answer here using inline R code and delete this comment.
+        
+        
+        </div>
+  
+      + How many of the values do you think are potentially rounding errors?  Explain your reasoning and show the code you used to identify the errors.
+    
+        ```{r}
+        # Type your code and comments inside the code chunk
+        # Number of rounding discrepancies for siri
+        
+        # Number of rounding discrepancies for brozek
+        
+        # Number of rounding discrepancies for bmi
+        
+        ```
+    
+        <div id="answer">
+        Type your complete sentence answer here using inline R code and delete this comment.
+        
+       
+        </div>
+      
+----------    
+    
+2.  Make the clean data accessible to `R`.
+
+      + Load the file `bodyfatClean.csv` from <https://github.com/alanarnholt/MISCD> into your `R` session. Specifically, use the `read.csv()` function to load the file `bodyfatClean.csv` into your current `R` session naming the object `cleaned_bf`.  Since GitHub stores the file as html, click on the raw button to obtain a `*.csv` file. 
+    
+        ```{r, label = "readin_clean"}
+        # Type your code and comments inside the code chunk
+        # Read in clean data
+        
+        ```
+    
+    
+      + Use the `glimpse()` function from the `dplyr` package written by @R-dplyr to view the structure of `cleaned_bf`.
+    
+        ```{r, label = "glimpseClean"}
+        # Type your code and comments inside the code chunk
+        # Examining the object cleaned_bf
+        
+        ```
+      
+----------  
+
+3.  Partition the data.
+
+      + Use the `creatDataPartition()` function from the `caret` package to partition the data in to `training` and `testing`. Use 80% of the data for training  and 20%  for testing.  To ensure reproducibility of the partition, use `set.seed(314)`.  The response variable you want to use is `brozek_C` (the computed brozek based on the reported density).
+    
+        ```{r, label = "partitionData"}
+        # Type your code and comments inside the code chunk
+        # Partitioning the data
+        
+        ```
+    
+      + Use the `dim()` function to verify the sizes of `training` and `testing` data sets.
+
+        ```{r, label = "checkingSize"}
+        # Type your code and comments inside the code chunk
+        # Verifying dimensions of training and testing
+        
+        ```
+    
+        <div id="answer">
+        Type your complete sentence answer here using inline R code and delete this comment.
+        
+        
+        </div>
+      
+_______________
+
+4.  Transform the data.
+
+      + Use the `preProcess()` function to transform the predictors that are in the `training` data set.  Specifically, pass a vector with `"center"`, `"scale"`, and `"BoxCox"` to the `method` argument of `preProcess()`.  Make sure not to transform the response (`brozek_C`). 
+      
+        ```{r}
+        # Type your code and comments inside the code chunk
+        # Transforming the data
+       
+        ```
+      
+      + Use the `predict()` function to construct a transformed training set and a transformed testing set. Name the new transformed data sets `trainingTrans` and `testingTrans`, respectively.
+    
+        ```{r, label = "trans"}
+        # Type your code and comments inside the code chunk
+        # Creating trainingTrans and testingTrans
+        
+        ```
+_________________  
+
+5. Use the `trainControl()` function to define the resampling method (repeated cross-validation), the number of resampling iterations (10), and the number of repeats or complete sets to generate (5), storing the results in the object `myControl`.  
+
+    ```{r, label = "MyControl"}
+    # Type your code and comments inside the code chunk
+    # Define the type of resampling
+    
+    ```
+
+___________
+
+6.  Fit a linear regression model using forward stepwise selection.
+      
+      + Use the `corrplot()` function from the `corrplot` package written by @R-corrplot to identify predictors that may be linearly related in `trainingTrans`.  Are any of the variables colinear?  If so, remove the predictor that is least correlated to the response variable.  Note that when `method = "number"` is used with `corrplot()`, color coded numerical correlations are displayed.
+      
+        ```{r, label = "CorrPlot"}
+        # Type your code and comments inside the code chunk
+        # Identifying linearly related predictors
+        
+        ```
+        
+        <div id="answer">
+        Type your complete sentence answer here using inline R code and delete this comment.
+        
+        
+        </div>
+      
+      
+      + Use the `train()` function with `method = "leapForward"`, `tuneLength = 10` and assign the object `myControl` to the `trControl` argument of the `train()` function to fit a forward selection model where the goal is to predict body fat.  Use `brozek_C` as the response and store the results of `train()` in `mod_FS`.  Use `set.seed(42)` for reproducibility.  Do not include any predictors that are perfectly correlated.
+    
+        ```{r, label = "modFS", message = FALSE}
+        # Type your code and comments inside the code chunk
+        # Fit model with forward stepwise selection
+        
+        ```
+      
+      + Print `mod_FS` to the `R` console.  
+    
+        ```{r}
+        # Type your code and comments inside the code chunk
+        # Printing mod_FS
+        
+        ```
+      
+      + Using the output in your console, what criterion has been used to pick the best submodel? What is the value of the criterion that has been used? How many predictor variables are selected?
+    
+        ```{r}
+        # Type your code and comments inside the code chunk
+        # Isolating results from mod_FS
+        
+        ```
+    
+        <div id="answer">
+        Type your complete sentence answer here using inline R code and delete this comment.
+        
+        
+        </div>
+      
+      + Use the `summary()` function to find out which predictors are selected as the final submodel. 
+    
+        ```{r}
+        # Type your code and comments inside the code chunk
+        # Viewing final model
+        
+        ```
+    
+        <div id="answer">
+        Type your complete sentence answer here using inline R code and delete this comment.
+        
+       
+        </div>
+        
+      + Compute the RMSE for `mod_FS` using the `testing` data set.
+      
+        ```{r}
+        # Type your code and comments inside the code chunk
+        # Computing RMSE on the testing set
+       
+        ```
+        
+      
+______________
+
+7.  Fit a linear regression model using backward stepwise selection.
+
+      + Use the `train()` function with `method = "leapBackward"`, `tuneLength = 10` and assign the object `myControl` to the `trControl` argument of the `train()` function to fit a backward elimination model where the goal is to predict body fat.  Use `brozek_C` as the response and store the results of `train()` in `mod_BE`.   Use `set.seed(42)` for reproducibility. Do not include any predictors that are perfectly correlated.
+    
+        ```{r, label = "modBE", message = FALSE}
+        # Type your code and comments inside the code chunk
+        # Fit model with backwards stepwise selection
+        
+        ```
+      
+      + Print `mod_BE` to the `R` console.
+    
+        ```{r}
+        # Type your code and comments inside the code chunk
+        # Printing mod_BE
+       
+        ```
+      
+      + According to the output, what criterion has been used to pick the best submodel? What is the value of the criterion that has been used? How many predictor variables are selected?
+    
+        ```{r}
+        # Type your code and comments inside the code chunk
+        # Viewing results from mod_BE
+        
+        ```
+    
+        <div id="answer">
+        Type your complete sentence answer here using inline R code and delete this comment.
+        
+        
+        </div>
+      
+      + Use the `summary()` function to find out which predictors are selected as the final submodel.  
+    
+        ```{r}
+        # Type your code and comments inside the code chunk
+        # Viewing final model
+        
+        ```
+    
+        <div id="answer">
+        Type your complete sentence answer here using inline R code and delete this comment.
+        
+        
+        </div>
+        
+      + Compute the RMSE for `mod_BE` using the `testing` data set.
+      
+        ```{r}
+        # Type your code and comments inside the code chunk
+        # Computing RMSE on the testing set
+        
+        ```
+      
+________________
+
+8. Fit a constrained linear regression model.
+
+      + Use the `train` function with `method = "glmnet"` and  `tuneLength= 10` to fit a constrained linear regression model named `mod_EN`.  Use `set.seed(42)` for reproducibility.  Do not include any predictors that are perfectly correlated.
+    
+        ```{r, label = "modEN", message = FALSE}
+        # Type your code and comments inside the code chunk
+        # Fit constrained model (elastic net)
+        
+        ```
+    
+      + Print `mod_EN` to the `R` console. 
+    
+        ```{r}
+        # Type your code and comments inside the code chunk
+        # Printing mod_EN
+        
+        ```
+      
+      + According to the output, what criterion was used to pick the best submodel? What is the value of this criterion?  Plot the object `mod_EN`. 
+    
+        ```{r}
+        # Type your code and comments inside the code chunk
+        # Viewing results from mod_EN and plotting mod_EN
+        
+        ```
+    
+        <div id="answer">
+        Type your complete sentence answer here using inline R code and delete this comment.  
+        
+        
+        </div>
+      
+      + Compute the RMSE for `mod_EN` using the `testing` data set.
+      
+        ```{r}
+        # Type your code and comments inside the code chunk
+        # Computing RMSE on the testing set
+        
+        ```
+___________________
+
+9.  Fit a regression tree.
+
+      + Use the `train()` function with `method = "rpart"`, `tuneLength = 10` along with the `myControl` as the `trControl` to fit a regression tree named `mod_TR`. Use `set.seed(42)` for reproducibility.  Do not include any predictors that are perfectly correlated.
+    
+        ```{r, label = "modTR", message = FALSE}
+        # Type your code and comments inside the code chunk
+        # Fit Regression Tree
+        
+        ```
+      
+      + Print `mod_TR` to the `R` console.
+    
+        ```{r}
+        # Type your code and comments inside the code chunk
+        # Printing mod_TR
+        
+        ```
+      
+      + According to the output, what criterion was used to pick the best submodel? What is the value of this criterion?
+    
+        ```{r}
+        # Type your code and comments inside the code chunk
+        # Viewing results from mod_TR 
+        
+        ```
+    
+        <div id="answer">
+        Type your complete sentence answer here using inline R code and delete this comment.
+        
+        
+        </div>
+      
+      + Use the `rpart()` function from the `rpart` package written by @R-rpart to build the regression tree using the complexity parameter (`cp`) value from `mod_TR` above. Name this tree `mod_TR3`.
+    
+        ```{r}
+        # Type your code and comments inside the code chunk
+        # Building regression tree using rpart
+       
+        ```
+      
+      + Use the `plot()` function from the `partykit` package written by @R-partykit to graph `mod_TR3`.
+    
+        ```{r, label = "partykitP"}
+        # Type your code and comments inside the code chunk
+        # Plotting mod_TR3 with partykit
+        
+        ```
+      
+      + Use the `rpart.plot()` function from the `rpart.plot` package written by @R-rpart.plot to graph `mod_TR3`.
+    
+        ```{r, label = "rpartPlotP"}
+        # Type your code and comments inside the code chunk
+        # Plotting mod_TR3 with rpart.plot
+        
+        ```      
+      
+      + What predictors are used in the graph of `mod_TR3`?
+    
+        <div id="answer">
+        Type your complete sentence answer here using inline R code and delete this comment.
+        
+        
+        </div>
+      
+      + Explain the `tree`.
+    
+        <div id="answer">
+        Type your complete sentence answer here using inline R code and delete this comment.
+        
+        
+        </div>
+    
+      + According to the tree, the `abdomen - wrist` measurements can be negative. Is this possible? If so, explain the reason for the negative values. 
+    
+        <div id="answer">
+        Type your complete sentence answer here using inline R code and delete this comment.
+        
+        
+        </div>
+      
+      + Compute the RMSE for `mod_TR3` using the `testing` data set.
+      
+        ```{r}
+        # Type your code and comments inside the code chunk
+        # Computing RMSE on the testing set
+        
+        ```
+_______________  
+
+10.  Fit a Random Forest model.
+
+      + Use the `train()` function with `method = "ranger"`, `tuneLength = 10` along with the `myControl` as the `trControl` to fit a regression tree named `mod_RF`. Use `set.seed(42)` for reproducibility.  Do not include any predictors that are perfectly correlated.
+    
+        ```{r, label = "modRF", message = FALSE}
+        # Type your code and comments inside the code chunk
+        # Fit Random Forest model
+        
+                
+        ```
+      
+      + Print `mod_RF` to the `R` console.
+    
+        ```{r}
+        # Type your code and comments inside the code chunk
+        # Printing mod_RF
+       
+        ```
+      
+      + According to the output, what criterion was used to pick the best submodel? What is the value of this criterion?
+    
+        ```{r}
+        # Type your code and comments inside the code chunk
+        # Viewing results from mod_RF
+        
+        ```
+    
+        <div id="answer">
+        Type your complete sentence answer here using inline R code and delete this comment.
+        
+        
+        </div>
+      
+      + Use the function `RMSE` along with the `predict` function to find the root mean square for the `testing` data.
+    
+        ```{r}
+        # Type your code and comments inside the code chunk
+        # Computing RMSE on the testing set
+        
+        ```
+      
+________________    
+
+11.  Among the models created from Problem 6 - Problem 10 (`mod_FS`, `mod_BE`, `mod_EN`, `mod_TR`, and `mod_RF`), which do you think is best for predicting body fat and why?
+
+
+    ```{r}
+    # Type your code and comments inside the code chunk
+    # Creating resamples list named mods
+    
+    ```
+
+
+      <div id="answer">
+      Type your complete sentence answer here using inline R code and delete this comment.
+      
+      
+      </div>
+        
+______________
+
+12. Many statistical algorithms work better on transformed variables; however, the user whether a nurse, physical therapist, or physician should be able to use your proposed model without resorting to a spreadsheet or calculator. Consequently, no transformation will take place in the models you will fit in this question.  Repeat Problem 6 through Problem 10 using the untransformed data in `training` and `testing` you created in Problem 3. Make sure to give new names to your new models that use the un-transformed data.
+      
+      + Use the `corrplot()` function from the `corrplot` package written by @R-corrplot to identify predictors that may be linearly related in `training`.
+    
+        ```{r}
+        # Type your code and comments inside the code chunk
+        # Identifying linearly related predictors Problem 6
+        
+        ```
+      
+      + Use the `train()` function with `method = "leapForward"`, `tuneLength = 10` and assign the object `myControl` to the `trControl` argument of the `train()` function to fit a forward selection model where the goal is to predict body fat.  Use `brozek_C` as the response and store the results of `train()` in `mod_FS2`.  Use `set.seed(42)` for reproducibility.  Do not include any predictors that are perfectly correlated.  
+        
+        ```{r, label = "modFS2", message = FALSE}
+        # Type your code and comments inside the code chunk
+        # Fit model with forward stepwise selection
+        
+        ```
+        
+      + Print `mod_FS2` to the `R` console.  
+        
+        ```{r}
+        # Type your code and comments inside the code chunk
+        # Printing mod_FS2
+        
+        ```
+        
+      + Using the output in your console, what criterion has been used to pick the best submodel? What is the value of the criterion that has been used? How many predictor variables are selected?  
+        
+        ```{r}
+        # Type your code and comments inside the code chunk
+        # Isolating results from mod_FS2
+        
+        ```
+    
+        <div id="answer">
+        Type your complete sentence answer here using inline R code and delete this comment.
+        
+        
+        </div>
+        
+      
+      + Use the `train()` function with `method = "leapBackward"`, `tuneLength = 10` and assign the object `myControl` to the `trControl` argument of the `train()` function to fit a backward elimination model where the goal is to predict body fat. Use `brozek_C` as the response and store the results of `train()` in `mod_BE2`. Use  set.seed(42) for reproducibility. Do not include any predictors that are perfectly correlated.
+        
+        ```{r, label = "modBE2", message = FALSE}
+        # Type your code and comments inside the code chunk
+        # Fit model with backwards stepwise selection Problem 7 
+        # with untransformed data
+        
+        ```
+        
+      + Print `mod_BE2` to the `R` console.
+        
+        ```{r}
+        # Type your code and comments inside the code chunk
+        # Printing mod_BE2
+        
+        ```
+        
+      + According to the output, what criterion has been used to pick the best submodel? What is the value of the criterion that has been used? How many predictor variables are selected?
+        
+        ```{r}
+        # Type your code and comments inside the code chunk
+        # Viewing results from mod_BE
+        
+        # Viewing final model
+        
+        ```
+        
+        <div id="answer">
+        Type your complete sentence answer here using inline R code and delete this comment.
+        
+        
+        </div>
+        
+      + Compute the RMSE for `mod_BE2` using the testing data set.
+      
+        ```{r}
+        # Type your code and comments inside the code chunk
+        # Computing RMSE on the testing set
+        
+        ```
+       
+       + Use the train function with `method = "glmnet"` and `tuneLength = 10` to fit a constrained linear regression model named `mod_EN2`. Use set.seed(42) for reproducibility. Do not include any predictors that are perfectly correlated.
+        
+        ```{r, label = "modEN2"}
+        # Type your code and comments inside the code chunk
+        # Fit constrained model Problem 8 
+        # with untransformed data
+        
+        ```
+        
+      + Print the `mod_EN2` to the `R` console.
+        
+        ```{r}  
+        # Type your code and comments inside the code chunk
+        # Printing mod_EN2
+        
+        ```
+        
+      + According to the output, what criterion was used to pick the best submodel? What is the value of this criterion? Plot the object `mod_EN2`.
+        
+        ```{r}
+        # Type your code and comments inside the code chunk
+        # Viewing results from mod_BE
+        
+        ```
+        
+        <div id="answer">
+        Type your complete sentence answer here using inline R code and delete this comment.
+        
+        
+        </div>
+        
+      + Compute the RMSE for `mod_EN2` using the `testing` data set.
+      
+        ```{r}
+        # Type your code and comments inside the code chunk
+        # Computing RMSE on the testing set
+        
+        ```
+        
+      + Use the `train()` function with `method = "rpart"`, `tuneLength = 10` along with the `myControl` as the `trControl` to fit a regression tree named `mod_TR2`. Use `set.seed(42)` for reproducibility. Do not include any predictors that are perfectly correlated.
+        
+        ```{r}
+        # Type your code and comments inside the code chunk
+        # Fit a regression tree Problem 9 
+        # with untransformed data
+        
+        ```
+        
+      + Print `mod_TR2` to the `R` console.
+        
+        ```{r}  
+        # Type your code and comments inside the code chunk
+        # Printing mod_TR2
+        
+        ```
+        
+      + According to the output, what criterion was used to pick the best submodel? What is the value of this criterion?
+        
+        ```{r}
+        # Type your code and comments inside the code chunk
+        # Viewing results from mod_TR2
+        
+        ```
+        
+      + Use the `rpart()` function from the `rpart` package written by @R-rpart to build the regression tree using the complexity parameter (`cp`) value from `mod_TR2` above. Name this tree `mod_TR4`.
+      
+        ```{r}
+        # Type your code and comments inside the code chunk
+        # Building regression tree using rpart
+        
+        ```
+      + Use the `rpart.plot()` function from the `rpart.plot` package written by @R-rpart to graph  `mod_TR4`.
+      
+        ```{r}
+        # Type your code and comments inside the code chunk
+        # Plotting mod_TR4 with rpart.plot
+        
+        ```
+      
+        <div id="answer">
+        Type your complete sentence answer here using inline R code and delete this comment.
+        
+        
+        </div>
+        
+      + Compute the RMSE for `mod_TR4` using the `testing` data set.
+        
+        ```{r}
+        # Type your code and comments inside the code chunk
+        # Computing RMSE on the testing set
+        
+        ```
+        
+      + Use the `train()` function with `method = "ranger"`, `tuneLength = 10` along with the `myControl` as the `trControl` to fit a regression tree named `mod_RF2`. Use `set.seed(42)` for reproducibility. Do not include any predictors that are perfectly correlated.
+        
+        ```{r, label = "modRF2"}
+        # Type your code and comments inside the code chunk
+        # Fit a regression tree Problem 10 
+        # with untransformed data
+        
+        ```
+        
+      + Print `mod_RF` to the `R` console.
+        
+        ```{r}  
+        # Type your code and comments inside the code chunk
+        # Printing mod_RF2
+        
+        ```
+        
+      + According to the output, what criterion was used to pick the best submodel? What is the value of this criterion?
+        
+        ```{r}
+        # Type your code and comments inside the code chunk
+        # Viewing results from mod_RF2
+        
+        ```
+        
+        <div id="answer">
+        Type your complete sentence answer here using inline R code and delete this comment.
+        
+        
+        </div>
+        
+      + Use the function `RMSE()` along with the `predict()` function to find the root mean square for the `testing` data.
+      
+        ```{r}
+        # Type your code and comments inside the code chunk
+        # Computing RMSE on the testing set
+        
+        ```
+          
+      + Which model does the best job of predicting body fat? 
+    
+        ```{r}
+        # Type your code and comments inside the code chunk
+        # Creating resamples list of different models
+        
+        ```
+    
+        <div id="answer">
+        Type your complete sentence answer here using inline R code and delete this comment.
+        
+        
+        </div>
+      
+      + Which model is the most practical model for someone who needs to rapidly assess a patient's body fat?
+    
+        <div id="answer">
+        Type your complete sentence answer here using inline R code and delete this comment.
+        
+        
+        </div>
+        
+        ```{r}
+        # Type your code and comments inside the code chunk
+        
+        
+        ```
+      
+__________________
+
+    
+## References
