@@ -32,16 +32,16 @@ This material is released under an [Attribution-NonCommercial-ShareAlike 3.0 Uni
 <div id="instructions">
 Follow all directions. Type complete sentences to answer all questions inside the `answer` tags provided in the R Markdown document.  Round all numeric answers you report inside the answer tags to four decimal places.  Use inline `R` code to report numeric answers inside the `answer` tags (i.e. do not hard code your numeric answers).
 
-The article by @johnson_fitting_1996 defines bodyfat determined with the siri and brozek methods as well as fat free weight using equations  \@ref(eq:siri), \@ref(eq:brozek), and \@ref(eq:fatfree), respectively.
+The article by @johnson_fitting_1996 defines bodyfat determined with the siri and brozek methods as well as fat free weight using equations  \@ref(eq:brozek), \@ref(eq:siri), and \@ref(eq:fatfree), respectively.
 
 \begin{equation}
-\text{bodyfatSiri} = \frac{457}{\text{density}} - 414.2
-(\#eq:siri)
+\text{bodyfatBrozek} = \frac{457}{\text{density}} - 414.2
+(\#eq:brozek)
 \end{equation}
 
 \begin{equation}
-\text{bodyfatBrozek} = \frac{495}{\text{density}} - 450
-(\#eq:brozek)
+\text{bodyfatSiri} = \frac{495}{\text{density}} - 450
+(\#eq:siri)
 \end{equation}
 
 \begin{equation}
